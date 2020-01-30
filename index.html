@@ -15,24 +15,106 @@
     </style>
   </head>
   <body>
+  <div>
+  <form id="nameForm" action="" style="background-color: antiquewhite">
+    <label>Your Name:</label>
+    <input id="nickName"/><button style="position: absolute;width: 6%">submit</button>
+  </form>
+  </div>
+  <div id="messageContainer" style="display: none">
     <ul id="messages"></ul>
-    <form action="">
+    <form action="" id="messageForm" >
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
+  </div>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(function () {
+          $(window).keydown(
+              event =>{
+                  if (event.which === 13) {
+                      if (username) {
+                          isTyping = false;
+                          socket.emit('chat message', $('#m').val());
+                          $('#m').val('');
+                          socket.emit('stop typing');
+                          isTyping = false;
+                      } else {
+                          socket.emit('nickname', {name:$('#nickName').val(),color: getUsernameColor($('#nickName').val())});
+                          $('#nickName').val('');
+                          $('#nameForm').css("display","none");
+                          $('#messageContainer').css("display","block");
+                      }
+                  }
+              }
+          )
         var socket = io();
-        $('form').submit(function(){
+        var userName ;
+        var COLORS = [
+              '#e21400', '#91580f', '#f8a700', '#f78b00',
+              '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
+              '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
+          ];
+        var isTyping = false;
+        const getUsernameColor = (username) => {
+              // Compute hash code
+              var hash = 7;
+              for (var i = 0; i < username.length; i++) {
+                  hash = username.charCodeAt(i) + (hash << 5) - hash;
+              }
+              // Calculate color
+              var index = Math.abs(hash % COLORS.length);
+              return COLORS[index];
+          }
+        $('#nameForm').submit(function(){
+          socket.emit('nickname', {name:$('#nickName').val(),color: getUsernameColor($('#nickName').val())});
+          $('#nickName').val('');
+          $('#nameForm').css("display","none");
+          $('#messageContainer').css("display","block");
+          return false;
+
+        });
+        $('#messageForm').submit(function () {
+            isTyping = false;
           socket.emit('chat message', $('#m').val());
           $('#m').val('');
+            socket.emit('stop typing');
           return false;
-        });
+
+        })
+          $('#messageForm').on("input",function () {
+              if(!isTyping){
+                  isTyping = true;
+                  socket.emit('typing', {msg:`${userName} is typing...`});
+              }
+          })
+        socket.on('newuser',function (name) {
+            userName=name;
+          $('#messages').append($('<li>').text(name+" joined"));
+          ;
+        })
+          socket.on('stop typing',function (data) {
+              $('.typing').fadeOut(function () {
+                  $(this).remove();
+              });
+          })
         socket.on('chat message', function(msg){
-          $('#messages').append($('<li>').text(msg));
+          $('#messages').append($('<li>').css("color",msg.usercolor).text(msg.time+":"+ msg.username+":"+ msg.message));
           window.scrollTo(0, document.body.scrollHeight);
         });
+        socket.on('typing',function(msg){
+            $('#messages').append($('<li>').addClass("typing").text(msg.username+" is typing"));
+            window.scrollTo(0, document.body.scrollHeight);
+        } )
+        socket.on("my message",function (data) {
+            $('#messages').append($('<li>').css("color",data.usercolor).text(data.time+":"+data.username+":"+ data.message));
+            window.scrollTo(0, document.body.scrollHeight);
+        })
+        socket.on('userleft',function (data) {
+          $('#messages').append($('<li>').text(data.des));
+          window.scrollTo(0, document.body.scrollHeight);
+        })
       });
     </script>
   </body>
