@@ -2,12 +2,15 @@
 <html>
   <head>
     <title>Socket.IO chat</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
       form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      form input { border: 0; padding: 10px; width: 80%; margin-right: .5%; }
+      form button { width: 10%; background: rgb(130, 224, 255); border: none; padding: 10px; }
       #messages { list-style-type: none; margin: 0; padding: 0; }
       #messages li { padding: 5px 10px; }
       #messages li:nth-child(odd) { background: #eee; }
@@ -15,17 +18,23 @@
     </style>
   </head>
   <body>
-  <div>
-  <form id="nameForm" action="" style="background-color: antiquewhite">
-    <label>Your Name:</label>
-    <input id="nickName"/><button style="position: absolute;width: 6%">submit</button>
+  <div class="container" style="position: fixed;bottom: 0">
+      <div class="row">
+  <form id="nameForm" action="" style="background-color: antiquewhite" class="col-lg-12 col-12">
+    <label class="col-lg-2 col-2">Your Name:</label>
+    <input class="col-lg-7 col-7" id="nickName"/><button class="col-lg-3 col-3" style="position: absolute">submit</button>
   </form>
+      </div>
   </div>
   <div id="messageContainer" style="display: none">
     <ul id="messages"></ul>
-    <form action="" id="messageForm" >
-      <input id="m" autocomplete="off" /><button>Send</button>
+      <div class="container" style="position: fixed;bottom: 0">
+          <div class="row">
+    <form action="" id="messageForm" class="col-lg-12 col-12" >
+      <input id="m" autocomplete="off" class="col-lg-9 col-9" /><button class="col-lg-2 col-2 ">Send</button>
     </form>
+          </div>
+      </div>
   </div>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
